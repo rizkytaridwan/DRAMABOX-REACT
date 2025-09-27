@@ -1,3 +1,4 @@
+//BACKEND index.js
 import express from 'express';
 import axios from 'axios';
 import cors from 'cors';
@@ -28,17 +29,17 @@ const getCachedToken = async ({ forceRefresh = false } = {}) => { // <-- Tambahk
 
     try {
         console.log(forceRefresh ? "[LOG] MEMAKSA mengambil token baru..." : "[LOG] Mengambil token baru (cache expired)...");
-        const res = await axios.get("https://dramabox-token.vercel.app/token", {
+        const res = await axios.get("https://dramabox-api.vercel.app/api/token", {
             timeout: 10000 
         });
         
-        if (!res.data || !res.data.token || !res.data.deviceid) {
+        if (!res.data || !res.data.data.token || !res.data.data.deviceId) {
             throw new Error("Response token tidak valid");
         }
         
         // Update cache
         tokenCache = {
-            data: res.data,
+            data: res.data.data,
             timestamp: Date.now()
         };
         
@@ -67,7 +68,7 @@ const createHeaders = (tokenData) => ({
     "cid": "DRA1000042",
     "package-name": "com.storymatrix.drama",
     "apn": "1",
-    "device-id": tokenData.deviceid,
+    "device-id": tokenData.deviceId,
     "language": "in",
     "current-language": "in",
     "p": "43",

@@ -160,6 +160,28 @@ export default function Player() {
             setError("Episode ini tidak memiliki URL yang valid");
         }
     };
+
+    const handleVideoEnded = React.useCallback(() => {
+        const episodes = dramaData.episodes;
+        if (!currentEpisode || !episodes || episodes.length === 0) {
+            return; // Keluar jika data tidak valid
+        }
+
+        // Cari index dari episode yang sedang diputar
+        const currentIndex = episodes.findIndex(
+            ep => ep.episodeNumber === currentEpisode.episodeNumber
+        );
+
+        // Cek apakah ada episode selanjutnya
+        if (currentIndex > -1 && currentIndex < episodes.length - 1) {
+            const nextEpisode = episodes[currentIndex + 1];
+            console.log(`[LOG] Video Selesai. Memutar episode selanjutnya: ${nextEpisode.title}`);
+            setCurrentEpisode(nextEpisode); // Set episode selanjutnya
+        } else {
+            console.log("[LOG] Episode terakhir telah selesai.");
+            // Tidak melakukan apa-apa jika ini adalah episode terakhir
+        }
+    }, [currentEpisode, dramaData.episodes]);
     
     // Loading state
     if (isLoading) {
@@ -238,6 +260,7 @@ export default function Player() {
                             className="max-h-[75vh] w-full"
                             controls 
                             autoPlay
+                            onEnded={handleVideoEnded}
                             onError={(e) => {
                                 console.error("Video error:", e);
                                 setError("Gagal memuat video. Silakan coba episode lain.");
